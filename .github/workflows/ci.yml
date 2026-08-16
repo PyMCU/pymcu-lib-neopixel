@@ -1,0 +1,54 @@
+# Two things have to hold before this library can ship: the framebuffer logic is
+# right (pytest, on the host) and the sources are something the compiler accepts
+# and can build for every architecture the manifest claims (pymcu).
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install pytest
+      - run: pytest -q
+
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: astral-sh/setup-uv@v4
+
+      - name: Install the compiler
+        run: uv pip install --system --prerelease=allow "pymcu-compiler[avr]"
+
+      # ASCII-only sources, a valid manifest, a __CHIP__ dispatch that raises
+      # rather than returning a sentinel, and a public API that has not moved
+      # without the version moving.
+      - name: Lint the library
+        run: pymcu lint --library src/pymcu_lib_neopixel
+
+      # Compiles the example for one chip per architecture and fails when the
+      # result contradicts supports.arch in either direction.
+      - name: Measure it
+        run: |
+          echo "." > libraries.txt
+          pymcu index build --from libraries.txt --venv .check-venv \
+            --output measured.json --strict
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: measured
+          path: measured.json
+          if-no-files-found: ignore
