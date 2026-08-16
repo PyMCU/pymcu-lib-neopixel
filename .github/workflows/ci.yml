@@ -48,7 +48,7 @@ jobs:
       # result contradicts supports.arch in either direction.
       - name: Measure it
         run: |
-          if pymcu --help 2>&1 | grep -q "index"; then
+          if pymcu index --help >/dev/null 2>&1; then
             echo "." > libraries.txt
             pymcu index build --from libraries.txt --venv .check-venv \
               --output measured.json --strict
@@ -61,7 +61,7 @@ jobs:
       # nothing about this library.
       - name: Build the example
         run: |
-          if ! pymcu --help 2>&1 | grep -q "install"; then
+          if ! pymcu install --help >/dev/null 2>&1; then
             echo "skipped: needs a pymcu-compiler that discovers libraries" >> "$GITHUB_STEP_SUMMARY"
             exit 0
           fi
