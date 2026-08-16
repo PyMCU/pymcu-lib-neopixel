@@ -56,11 +56,17 @@ jobs:
             echo "skipped: needs a pymcu-compiler with 'index build'" >> "$GITHUB_STEP_SUMMARY"
           fi
 
-      # Whatever the compiler's vintage, the example must still build.
+      # Needs a compiler that discovers libraries through the pymcu.libraries
+      # entry point; on an older one the import cannot resolve, which says
+      # nothing about this library.
       - name: Build the example
         run: |
-          cd src/pymcu_lib_neopixel/examples/basic
+          if ! pymcu --help 2>&1 | grep -q "install"; then
+            echo "skipped: needs a pymcu-compiler that discovers libraries" >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
           uv pip install --system --prerelease=allow -e "$GITHUB_WORKSPACE"
+          cd src/pymcu_lib_neopixel/examples/basic
           pymcu build
 
       - uses: actions/upload-artifact@v4
