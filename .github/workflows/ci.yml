@@ -32,19 +32,36 @@ jobs:
       - name: Install the compiler
         run: uv pip install --system --prerelease=allow "pymcu-compiler[avr]"
 
-      # ASCII-only sources, a valid manifest, a __CHIP__ dispatch that raises
-      # rather than returning a sentinel, and a public API that has not moved
-      # without the version moving.
+      # The library checks landed in the driver after 0.1.0a5, so on an older
+      # compiler they are skipped out loud rather than failing the run: nothing
+      # is wrong with the library, the tooling simply is not published yet.
+      # Remove the guard once pymcu-compiler ships them.
       - name: Lint the library
-        run: pymcu lint --library src/pymcu_lib_neopixel
+        run: |
+          if pymcu lint --help 2>&1 | grep -q -- "--library"; then
+            pymcu lint --library src/pymcu_lib_neopixel
+          else
+            echo "skipped: needs a pymcu-compiler with 'lint --library'" >> "$GITHUB_STEP_SUMMARY"
+          fi
 
       # Compiles the example for one chip per architecture and fails when the
       # result contradicts supports.arch in either direction.
       - name: Measure it
         run: |
-          echo "." > libraries.txt
-          pymcu index build --from libraries.txt --venv .check-venv \
-            --output measured.json --strict
+          if pymcu --help 2>&1 | grep -q "index"; then
+            echo "." > libraries.txt
+            pymcu index build --from libraries.txt --venv .check-venv \
+              --output measured.json --strict
+          else
+            echo "skipped: needs a pymcu-compiler with 'index build'" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      # Whatever the compiler's vintage, the example must still build.
+      - name: Build the example
+        run: |
+          cd src/pymcu_lib_neopixel/examples/basic
+          uv pip install --system --prerelease=allow -e "$GITHUB_WORKSPACE"
+          pymcu build
 
       - uses: actions/upload-artifact@v4
         if: always()
