@@ -20,3 +20,7 @@ language-level = 1
 
 [library.examples]
 basic = "examples/basic"
+micropython_basic = "examples/micropython_basic"
+circuitpython_basic = "examples/circuitpython_basic"
+color_wipe = "examples/color_wipe"
+auto_write = "examples/auto_write"
