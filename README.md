@@ -46,7 +46,7 @@ pixels.show()
 
 None of those three files contains a single conditional: the layer adapters are plain
 Python written against each API as it is documented upstream. Everything that has to
-know about a chip lives in one private module, `_neopixel_core`, and the compiler folds
+know about a chip lives in one private module, `_neopixel.core`, and the compiler folds
 it away.
 
 ## Cost
@@ -76,13 +76,13 @@ by this fix and should be avoided until it is. See
 for the measured numbers, the `PB0` gap, and how the numbers were obtained.
 
 Other architectures raise a compile-time error rather than returning something that
-looks like it worked. Ports are welcome: `_neopixel_avr.py` is the whole contract —
+looks like it worked. Ports are welcome: `_neopixel/avr.py` is the whole contract —
 see [docs/Porting-to-a-new-architecture.md](docs/Porting-to-a-new-architecture.md).
 
 ## Examples
 
 Five complete, buildable PyMCU projects live under
-[`src/pymcu_lib_neopixel/examples/`](src/pymcu_lib_neopixel/examples/): the native,
+[`examples/`](examples/): the native,
 MicroPython and CircuitPython APIs doing the same fill-and-blink, plus a per-pixel
 colour wipe and an `auto_write` demo. See
 [docs/Getting-started.md](docs/Getting-started.md) for how to build them and their

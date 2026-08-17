@@ -20,7 +20,7 @@ class Strip:
         self._pin = pin
         match __CHIP__.arch:
             case "avr":
-                from _neopixel_avr import ws2812_init
+                from _neopixel.avr import ws2812_init
                 ws2812_init(pin)
             case _:
                 # One string literal, not two adjacent ones: the parser reads a
@@ -32,7 +32,7 @@ class Strip:
     def write_byte(self, value: uint8):
         match __CHIP__.arch:
             case "avr":
-                from _neopixel_avr import ws2812_write_byte
+                from _neopixel.avr import ws2812_write_byte
                 ws2812_write_byte(self._pin, value)
             case _:
                 raise CompileError("NeoPixel timing is only implemented for AVR")
@@ -41,7 +41,7 @@ class Strip:
     def latch(self):
         match __CHIP__.arch:
             case "avr":
-                from _neopixel_avr import ws2812_reset
+                from _neopixel.avr import ws2812_reset
                 ws2812_reset(self._pin)
             case _:
                 raise CompileError("NeoPixel timing is only implemented for AVR")

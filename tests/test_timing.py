@@ -21,6 +21,8 @@ useful on a machine with neither.
 
 import shutil
 import subprocess
+import sys
+from pathlib import Path
 
 import pytest
 
@@ -42,7 +44,7 @@ PINS = [
 ]
 
 PROBE = """\
-from _neopixel_avr import ws2812_init, ws2812_write_byte
+from _neopixel.avr import ws2812_init, ws2812_write_byte
 from pymcu.types import asm
 
 
@@ -91,11 +93,27 @@ def _measure(hex_text: str, port_index: int, bit: int) -> tuple[list[int], list[
     return highs, lows
 
 
+def _pymcu() -> str | None:
+    """
+    Prefer the pymcu that lives beside the interpreter running this test.
+
+    A `pymcu` earlier on PATH -- a globally installed one, say -- builds
+    against a different environment than the editable install under test, and
+    reports this library as missing when it is merely somewhere else. The venv
+    running pytest is the one it was installed into, so its bin/ is trusted
+    first; a bare `shutil.which` remains the fallback outside a venv layout.
+    """
+    beside_interpreter = Path(sys.executable).parent / "pymcu"
+    if beside_interpreter.exists():
+        return str(beside_interpreter)
+    return shutil.which("pymcu")
+
+
 @pytest.fixture(scope="module")
 def probe(tmp_path_factory):
     """Builds a probe per pin, once, and hands back its measurements."""
     pytest.importorskip("avr8sharp", reason="needs the emulator")
-    pymcu = shutil.which("pymcu")
+    pymcu = _pymcu()
     if pymcu is None:
         pytest.skip("needs a pymcu compiler on PATH")
 

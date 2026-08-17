@@ -21,7 +21,7 @@ This wiki covers the library, not PyMCU itself. Start with
   disabled during `show()`, the SRAM framebuffer and its cost, and the AVR bit timing:
   verified in simulation for eleven of the twelve supported pins, still broken on the
   twelfth (`PB0`).
-- [Porting to a new architecture](Porting-to-a-new-architecture.md) — `_neopixel_avr.py`
+- [Porting to a new architecture](Porting-to-a-new-architecture.md) — `_neopixel/avr.py`
   is the entire AVR-specific contract; what a port to another architecture has to
   provide.
 - [Troubleshooting](Troubleshooting.md) — compile errors, wrong colors, nothing lights
@@ -42,7 +42,7 @@ This wiki covers the library, not PyMCU itself. Start with
 ## Which API do I use?
 
 Whichever one your script is already written against. All three read and write the
-same per-strip SRAM buffer through `_neopixel_core.py`, so a native script, a
+same per-strip SRAM buffer through `_neopixel/core.py`, so a native script, a
 MicroPython script and a CircuitPython script that set the same pixels produce the
 same bytes on the wire — see
 [`test_every_layer_puts_the_same_bytes_on_the_wire`](../tests/test_neopixel.py) in the

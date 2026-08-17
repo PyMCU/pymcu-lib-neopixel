@@ -14,7 +14,10 @@ import sys
 from pathlib import Path
 from types import ModuleType
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src" / "pymcu_lib_neopixel"))
+# The sources the compiler reads: the only part of the package that is
+# Python meant to be read at all.
+SOURCE_DIR = Path(__file__).resolve().parents[1] / "src" / "pymcu_lib_neopixel" / "mcu"
+sys.path.insert(0, str(SOURCE_DIR))
 
 
 def _install_stubs() -> None:
@@ -61,7 +64,13 @@ def _install_stubs() -> None:
 
     # The core is the one module that talks to the hardware; under CPython it
     # records what it was told to send, which is what the tests assert on.
-    core = ModuleType("_neopixel_core")
+    # _neopixel is a package on the device too, so it is one here: the stub
+    # has to hang off the same parent the library imports through.
+    private = ModuleType("_neopixel")
+    private.__path__ = [str(SOURCE_DIR / "_neopixel")]
+    sys.modules["_neopixel"] = private
+
+    core = ModuleType("_neopixel.core")
 
     class Strip:
         def __init__(self, pin):
@@ -76,7 +85,8 @@ def _install_stubs() -> None:
             self.latched += 1
 
     core.Strip = Strip
-    sys.modules["_neopixel_core"] = core
+    sys.modules["_neopixel.core"] = core
+    private.core = core
 
 
 _install_stubs()

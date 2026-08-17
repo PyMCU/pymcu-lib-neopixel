@@ -18,7 +18,7 @@ def _load(module_path: str, name: str):
     """Import one of the layer modules by file, since all three are `neopixel`."""
     from pathlib import Path
 
-    root = Path(__file__).resolve().parents[1] / "src" / "pymcu_lib_neopixel"
+    root = Path(__file__).resolve().parents[1] / "src" / "pymcu_lib_neopixel" / "mcu"
     spec = importlib.util.spec_from_file_location(name, root / module_path)
     module = importlib.util.module_from_spec(spec)
     sys.modules[name] = module

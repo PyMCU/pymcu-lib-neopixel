@@ -1,12 +1,12 @@
 # Porting to a new architecture
 
-Right now `pymcu.toml` declares `arch = ["avr"]`, and `_neopixel_core.py` raises a
+Right now `pymcu.toml` declares `arch = ["avr"]`, and `_neopixel/core.py` raises a
 compile-time `CompileError` for anything else:
 
 ```python
 match __CHIP__.arch:
     case "avr":
-        from _neopixel_avr import ws2812_init
+        from _neopixel.avr import ws2812_init
         ws2812_init(pin)
     case _:
         raise CompileError("NeoPixel timing is only implemented for AVR")
@@ -18,18 +18,18 @@ looks like it works and produces the wrong signal on the wire.
 
 ## What a port needs to provide
 
-`_neopixel_core.py` is the only file that knows what a chip is; every public API
+`_neopixel/core.py` is the only file that knows what a chip is; every public API
 (`neopixel.py` and both `compat/` adapters) is written against `Strip` and never
 touches `__CHIP__` directly. A port to a new architecture means:
 
-1. Add `_neopixel_<arch>.py`, mirroring `_neopixel_avr.py`'s three entry points:
+1. Add `_neopixel/<arch>.py`, mirroring `_neopixel/avr.py`'s three entry points:
    - `ws2812_init(pin: str)` — configure the pin as an output, held low.
    - `ws2812_write_byte(pin: str, val: uint8)` — bit-bang one byte, MSB first,
      WS2812 timing.
    - `ws2812_reset(pin: str)` — hold the pin low for the target's reset/latch
      duration (>50 us for WS2812/WS2812B; check your strip's datasheet, some clones
      want more).
-2. Add one `case "<arch>":` branch per function in `_neopixel_core.py`, importing
+2. Add one `case "<arch>":` branch per function in `_neopixel/core.py`, importing
    from the new module.
 3. Add `"<arch>"` to `arch` in `pymcu.toml` under `[library.supports]`.
 
@@ -91,7 +91,7 @@ time unless you've confirmed the compiler folds that computation away too.
 If your bit-send loop needs `asm()` labels (jump targets for a hand-written timing
 loop), it cannot be `@inline` — an `@inline` function's body is duplicated at every
 call site, and the assembler rejects a label defined more than once. `_ws2812_b` /
-`_ws2812_d` in `_neopixel_avr.py` are the existing example of a non-inline helper
+`_ws2812_d` in `_neopixel/avr.py` are the existing example of a non-inline helper
 used for exactly this reason; see
 [How it works](How-it-works.md#pin-dispatch-two-different-mechanisms) for what that
 costs you: any argument to a non-inline function is a real runtime value in the

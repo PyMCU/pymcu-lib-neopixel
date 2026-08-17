@@ -11,7 +11,7 @@ pulse of a fixed total duration, split between a high phase and a low phase whos
 relative lengths tell the strip which bit it received; there is no separate clock
 signal, so the split has to be right.
 
-`_neopixel_avr.py`'s header comment states the WS2812B target at 16 MHz this way:
+`_neopixel/avr.py`'s header comment states the WS2812B target at 16 MHz this way:
 
 ```
 0-bit: HIGH ~400 ns (6 cy), LOW ~850 ns (14 cy)
@@ -78,7 +78,7 @@ The library matches on pin names and bit indices in two places, and they are fol
 very differently by the compiler — worth knowing if you're reading the generated
 assembly or porting to a new chip.
 
-`ws2812_init`, `ws2812_write_byte` and `ws2812_reset` in `_neopixel_avr.py` are all
+`ws2812_init`, `ws2812_write_byte` and `ws2812_reset` in `_neopixel/avr.py` are all
 `@inline` and take `pin: str`. Every caller in this library passes a string literal
 (`"PD6"`, or a value that was itself inlined down to a literal from `NeoPixel("PD6",
 8)`), so by the time the compiler reaches `match pin:` inside these functions, `pin`

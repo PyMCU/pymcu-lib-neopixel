@@ -36,7 +36,7 @@ hardware constraint of the LEDs, not something the library manages.
 
 ```bash
 git clone https://github.com/PyMCU/pymcu-lib-neopixel
-cd pymcu-lib-neopixel/src/pymcu_lib_neopixel/examples/basic
+cd pymcu-lib-neopixel/examples/basic
 pymcu build
 ```
 
@@ -54,7 +54,7 @@ your board uses).
 ## Every example in the library
 
 Each one is a complete, independent PyMCU project under
-`src/pymcu_lib_neopixel/examples/`. Build any of them the same way: `cd` into its
+`examples/`. Build any of them the same way: `cd` into its
 directory and run `pymcu build`. Figures below are for an ATmega328P (Arduino Uno) at
 16 MHz, program storage 32768 bytes; `code` excludes the 104-byte interrupt vector
 table every AVR program carries.

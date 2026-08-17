@@ -1,32 +1,29 @@
-# MicroPython-compatible neopixel module.
+# NeoPixel (WS2812/WS2812B) strips -- native PyMCU API.
 #
-# The code below is the MicroPython API, unchanged:
-#
-#   from machine import Pin
 #   from neopixel import NeoPixel
 #
-#   np = NeoPixel(Pin(6), 8)
-#   np[0] = (255, 0, 0)
-#   np.fill((0, 0, 0))
-#   np.write()
+#   strip = NeoPixel("PD6", 8)
+#   strip[0] = (255, 0, 0)
+#   strip.show()
 #
-# Same script, no interpreter: `np.write()` expands into the WS2812 bit-banging
-# routine at compile time, and the pixel buffer is the only thing that exists in
-# SRAM.
+# Colours are held in a per-strip SRAM framebuffer, three bytes per pixel in
+# WS2812 wire (GRB) order, so a single pixel can be changed without rewriting
+# the rest. A strip of 8 costs 24 bytes of SRAM and nothing else: every method
+# is @inline and no object exists on the device.
 from pymcu.types import asm, inline, uint8, uint16
 
-from _neopixel_core import Strip
+from _neopixel.core import Strip
 
 
 class NeoPixel:
-    """A WS2812 chain driven from a machine.Pin, addressed like a list."""
 
     @inline
-    def __init__(self, pin, n: uint8, bpp: uint8 = 3, timing: uint8 = 1):
-        # machine.Pin carries the port name the HAL works in; taking it here is
-        # what lets a MicroPython script hand us its own Pin object.
-        self._strip = Strip(pin._name)
+    def __init__(self, pin: str, n: uint8):
+        self._strip = Strip(pin)
         self._n = n
+        # The annotation reserves a fixed uint8[n*3] array; the bytearray()
+        # initialiser is what makes the same attribute indexable under CPython
+        # simulation.
         self._buf: uint8[n * 3] = bytearray(n * 3)
 
     @inline
@@ -54,9 +51,9 @@ class NeoPixel:
             i = i + 1
 
     @inline
-    def write(self):
-        # WS2812 bit timing is cycle-exact: an interrupt mid-byte corrupts every
-        # pixel after it.
+    def show(self):
+        # WS2812 bit timing is cycle-exact: an interrupt in the middle of a
+        # byte corrupts the colours of every pixel after it.
         asm("CLI")
         total: uint16 = self._n * 3
         i: uint16 = 0

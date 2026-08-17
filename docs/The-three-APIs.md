@@ -3,7 +3,7 @@
 `import neopixel` resolves differently depending on the `stdlib` layer your project
 declares in `pyproject.toml`. All three give you a `NeoPixel` class over the same
 per-strip SRAM framebuffer, and all three write GRB bytes to the wire through the same
-`_neopixel_core.Strip` — see [How it works](How-it-works.md). The difference is only
+`_neopixel.core.Strip` — see [How it works](How-it-works.md). The difference is only
 which API you get, chosen to match a script you may already have.
 
 ## Native (`stdlib` unset)

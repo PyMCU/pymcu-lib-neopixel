@@ -15,7 +15,7 @@
 # that exists in SRAM.
 from pymcu.types import asm, inline, uint8, uint16
 
-from _neopixel_core import Strip
+from _neopixel.core import Strip
 
 # Colour orders, named as CircuitPython names them.
 RGB = "RGB"

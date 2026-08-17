@@ -51,7 +51,7 @@ inside the same window, so the strip can't tell a 0-bit from a 1-bit). Use a dif
 pin, or fix `_ws2812_b`'s `case 0:` yourself to match `case 1:` (see
 [How it works: bit timing](How-it-works.md#bit-timing-measured-on-the-emulator-not-derived-from-source)).
 
-For every other supported pin, the AVR bit encoding (`_neopixel_avr.py`) is verified
+For every other supported pin, the AVR bit encoding (`_neopixel/avr.py`) is verified
 in simulation against both the WS2812 and WS2812B timing windows — see the same
 section above for the measured numbers and `tests/test_timing.py`, which fails if a
 future change narrows the margin again. That verification is on a cycle-accurate
