@@ -77,12 +77,22 @@ def _install_stubs() -> None:
             self.pin = pin
             self.sent = []
             self.latched = 0
+            self.events = []
+
+        def begin_frame(self):
+            self.events.append("begin")
 
         def write_byte(self, value):
             self.sent.append(value)
+            if self.events[-1:] != ["bytes"]:
+                self.events.append("bytes")
 
         def latch(self):
             self.latched += 1
+            self.events.append("latch")
+
+        def end_frame(self):
+            self.events.append("end")
 
     core.Strip = Strip
     sys.modules["_neopixel.core"] = core

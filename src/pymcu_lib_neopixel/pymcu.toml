@@ -10,7 +10,7 @@ sources = "mcu"
 modules = ["neopixel", "_neopixel"]
 
 [library.supports]
-arch = ["avr"]
+arch = ["avr", "arm"]
 chips = []
 layer = "native"
 adapters = ["micropython", "circuitpython"]

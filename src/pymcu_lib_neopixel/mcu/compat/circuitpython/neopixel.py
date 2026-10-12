@@ -80,14 +80,14 @@ class NeoPixel:
 
     @inline
     def show(self):
-        asm("CLI")
+        self._strip.begin_frame()
         total: uint16 = self._n * 3
         i: uint16 = 0
         while i < total:
             self._strip.write_byte(self._buf[i])
             i = i + 1
         self._strip.latch()
-        asm("SEI")
+        self._strip.end_frame()
 
     @inline
     def deinit(self):
