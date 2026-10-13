@@ -66,7 +66,7 @@ jobs:
             exit 0
           fi
           uv pip install --system --prerelease=allow -e "$GITHUB_WORKSPACE"
-          cd src/pymcu_lib_neopixel/examples/basic
+          cd examples/basic
           pymcu build
 
       - uses: actions/upload-artifact@v4
