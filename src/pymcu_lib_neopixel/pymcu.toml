@@ -10,7 +10,11 @@ sources = "mcu"
 modules = ["neopixel", "_neopixel"]
 
 [library.supports]
-arch = ["avr", "arm"]
+# The RP2040 and RP2350 arms of mcu/_neopixel/core.py are in the tree and tested on the host, but
+# they call pymcu.hal.ws2812, whose PIO implementation is not in a published pymcu-stdlib yet
+# (0.1.0b1 stops at "WS2812 pixels are not implemented on this architecture yet"). "arm" goes back
+# here, together with the stdlib floor below moving to the release that ships the HAL.
+arch = ["avr"]
 chips = []
 layer = "native"
 adapters = ["micropython", "circuitpython"]

@@ -25,10 +25,13 @@ def _load(module_path: str, name: str):
     return module
 
 
-def test_the_manifest_supports_the_arm_parts():
+def test_the_manifest_claims_only_what_the_published_compiler_builds():
+    # The arm arms below are tested on the host, but pymcu.hal.ws2812 has no PIO implementation in
+    # a published pymcu-stdlib yet, so the manifest does not promise them. When it does, this
+    # becomes ["avr", "arm"] together with the stdlib floor in [library.requires].
     manifest = tomllib.loads((ROOT / "pymcu.toml").read_text())
 
-    assert manifest["library"]["supports"]["arch"] == ["avr", "arm"]
+    assert manifest["library"]["supports"]["arch"] == ["avr"]
 
 
 def test_every_layer_brackets_a_frame_in_the_core():
